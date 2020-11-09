@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/samamoo/tinyapp/issues"
   },
-  "homepage": "https://github.com/samamoo/tinyapp#readme"
+  "homepage": "https://github.com/samamoo/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
