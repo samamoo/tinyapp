@@ -1,11 +1,13 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan')
 const app = express();
 
 const PORT = 8080;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(morgan('dev'));
 
 app.set("view engine", "ejs");
 
@@ -20,9 +22,9 @@ const generateRandomString = function() {
 
 const userDB =  {
   userID : {
-    id: userID,
-    email: email,
-    password: password,
+    id: "id",
+    email: "email",
+    password: "password",
   },
 };
 
@@ -52,8 +54,16 @@ app.get("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.passsword;
   const userTemplate = {email, password};
-
   res.render("register", userTemplate)
+})
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.passsword;
+  const id = generateRandomString();
+  const user = {id, email, password};
+  userDB[id] = user;
+  res.cookie("user_ID", user.id)
+  res.redirect("urls");
 })
 
 //INDEX OF URLS
