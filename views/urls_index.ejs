@@ -29,7 +29,7 @@
             <td><%= url %></td>
             <td><%= urls[url] %></td>
             <td>
-              <form method="POST" action="/urls/<%= url %>/edit" id="<%= url %>">
+              <form method="GET" action="/urls/<%= url %>" id="<%= url %>">
                 <button type="submit" value="EDIT" id="<%= url %>" class="btn btn-primary">EDIT</button>
               </form>
             </td>
