@@ -18,6 +18,14 @@ const generateRandomString = function() {
   return Math.floor((1 + Math.random()) * 0x100000).toString(16).substring();
 };
 
+const userDB =  {
+  userID : {
+    id: userID,
+    email: email,
+    password: password,
+  },
+};
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -41,7 +49,11 @@ app.post("/logout", (req, res) => {
 })
 //REGISTER
 app.get("/register", (req, res) => {
-  res.render("register")
+  const email = req.body.email;
+  const password = req.body.passsword;
+  const userTemplate = {email, password};
+
+  res.render("register", userTemplate)
 })
 
 //INDEX OF URLS
