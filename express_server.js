@@ -37,7 +37,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.cookie("username", req.body.username);
   res.clearCookie("username")
-  res.redirect("/urls")
+  res.redirect("/register")
 })
 //REGISTER
 app.get("/register", (req, res) => {
