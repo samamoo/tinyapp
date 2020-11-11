@@ -39,6 +39,10 @@ app.post("/logout", (req, res) => {
   res.clearCookie("username")
   res.redirect("/urls")
 })
+//REGISTER
+app.get("/register", (req, res) => {
+  res.render("register")
+})
 
 //INDEX OF URLS
 app.get("/urls", (req,res) => {
