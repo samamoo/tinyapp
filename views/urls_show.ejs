@@ -20,10 +20,10 @@
         <hr>
         <hr>
         <h5 name="edit">Edit URL</h5>
-          <form method="POST" action="/urls/<%= shortURL %>/edit" id="<%= shortURL %>">
+          <form method="POST" action="/urls/<%= shortURL %>" id="<%= longURL %>">
             <p class="card-text">New URL:
-            <input type="text" placeholder="New URL here">
-            <button type="submit" value="edit" id="<%= shortURL %>" class="btn btn-primary">Submit</button></p>
+            <input type="text" placeholder="http://" style="width: 300px; margin: 1em" name="longURL">
+            <button type="submit" value="edit" id="<%= longURL %>" class="btn btn-primary">Submit</button></p>
         </form>
       </div>
     <div class="card-footer text-muted"></div>
