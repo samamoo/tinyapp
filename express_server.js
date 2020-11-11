@@ -60,6 +60,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect(`/urls`)
 })
 
+//EDIT A URL
+app.post("/urls/:shortURL", (req, res) => {
+  console.log(req.params, req.body)
+  let newLong = req.body.longURL;
+  console.log(newLong)
+  urlDatabase[req.params.shortURL] = newLong;
+  console.log(urlDatabase)
+  res.redirect(`/urls`)
+});
 
 //LISTEN
 app.listen(PORT, () => {
