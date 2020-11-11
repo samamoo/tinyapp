@@ -34,7 +34,12 @@ app.post("/login", (req, res) => {
   res.cookie("username", username);
   res.redirect("/urls");
 });
-
+//LOGOUT
+app.post("/logout", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.clearCookie("username")
+  res.redirect("/urls")
+})
 
 //INDEX OF URLS
 app.get("/urls", (req,res) => {
