@@ -56,6 +56,17 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  if (!password || !email) {
+    return res.status(400).send('Please enter an email and password');
+  }
+  //loop through the list of user id's in the database
+  //maybe make into a function?
+  // let foundUser;
+  for (const id in userDB) {
+    if (userDB[id].email === email) {
+      return res.status(400).send("This email is taken! Please use a different email.");
+    }
+  }
   const id = generateRandomString();
   const user = {id, email, password};
   userDB[id] = user;
