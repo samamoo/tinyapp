@@ -30,8 +30,7 @@ app.get("/hello", (req, res) => {
 
 //LOGIN
 app.post("/login", (req, res) => {
-  let username = req.body.username;
-  res.cookie("username", username);
+  res.cookie("username", req.body.username);
   res.redirect("/urls");
 });
 //LOGOUT
