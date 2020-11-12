@@ -11,13 +11,24 @@ app.use(morgan('dev'));
 
 app.set("view engine", "ejs");
 
+const generateRandomString = function() {
+  return Math.floor((1 + Math.random()) * 0x100000).toString(16).substring();
+};
+
+const urlsForUser = (id) => {
+  let userURL = {};
+  for (const url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+        userURL[url] = urlDatabase[url];
+    }
+  }
+  return userURL;
+}
+
+
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "idString"},
   "9sm5xK": {longURL: "http://www.google.com", userID: "idString"},
-};
-
-const generateRandomString = function() {
-  return Math.floor((1 + Math.random()) * 0x100000).toString(16).substring();
 };
 
 const userDB =  {
@@ -65,6 +76,7 @@ app.get("/login", (req, res) => {
   const templateVars = {user: req.cookies["user_ID"]}
   res.render("login", templateVars);
 })
+
 //LOGOUT
 app.post("/logout", (req, res) => {
   res.clearCookie("user_ID")
@@ -97,6 +109,10 @@ app.post("/register", (req, res) => {
 
 //INDEX OF URLS
 app.get("/urls", (req,res) => {
+  if (!req.cookies["user_ID"]) {
+    res.redirect("/login").send("Please log in first.");
+  }
+  console.log(urlsForUser("idString"));
   const templateVars = {urls: urlDatabase, user: req.cookies["user_ID"]};
   res.render("urls_index", templateVars);
 });
