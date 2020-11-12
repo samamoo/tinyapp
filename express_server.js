@@ -12,8 +12,8 @@ app.use(morgan('dev'));
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "idString"},
+  "9sm5xK": {longURL: "http://www.google.com", userID: "idString"},
 };
 
 const generateRandomString = function() {
@@ -98,14 +98,15 @@ app.post("/register", (req, res) => {
 //INDEX OF URLS
 app.get("/urls", (req,res) => {
   const templateVars = {urls: urlDatabase, user: req.cookies["user_ID"]};
-  console.log(templateVars)
-  console.log(req.cookies)
   res.render("urls_index", templateVars);
 });
 
 //NEW URL PAGE
 app.get("/urls/new", (req, res) => {
-  const templateVars = {urls: urlDatabase, user: req.cookies["user_ID"]};
+  const templateVars = {urls: urlDatabase.longURL, user: req.cookies["user_ID"]};
+  if (!req.cookies["user_ID"]) {
+    res.redirect("/login");
+  }
   res.render("urls_new", templateVars);
 });
 
@@ -113,17 +114,22 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   let shortie = generateRandomString();
   let longie = req.body.longURL;
-  urlDatabase[shortie] = longie;
+  let newURL = {longURL: longie, userID: req.cookies["user_ID"].id};
+  urlDatabase[shortie] = newURL;
+  // urlDatabase[shortie].longURL = longie;
+  // urlDatabase[shortie].userID = req.cookies["user_ID"].id;
+  console.log(urlDatabase[shortie])
+
   res.redirect(`/urls/${shortie}`); 
 });
 
 app.get(`/u/:shortURL`, (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], urls: urlDatabase, user: req.cookies["user_ID"]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: req.cookies["user_ID"]};
   res.render("urls_show", templateVars);
 });
 
