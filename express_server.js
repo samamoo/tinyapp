@@ -40,14 +40,34 @@ app.get("/hello", (req, res) => {
 
 //LOGIN
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password;
+  if (!password || !email) {
+    return res.status(400).send('Please enter an email and password');
+  }
+  let foundUser;
+  for (const id in userDB) {
+    if (userDB[id].email === email) {
+      foundUser = userDB[id];
+    }
+  }
+  if (!foundUser) {
+    res.status(400).send("Incorrect input. Please try again.")
+  }
+  if (foundUser.password !== password) {
+    res.status(400).send("Inccorrect input. Please try again.")
+  }
+  res.cookie("user_ID", foundUser)
+  res.redirect("/urls")
 });
+
+app.get("/login", (req, res) => {
+  res.render("login");
+})
 //LOGOUT
 app.post("/logout", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.clearCookie("username")
-  res.redirect("/register")
+  res.clearCookie("user_ID")
+  res.redirect("login")
 })
 //REGISTER
 app.get("/register", (req, res) => {
@@ -61,7 +81,6 @@ app.post("/register", (req, res) => {
   }
   //loop through the list of user id's in the database
   //maybe make into a function?
-  // let foundUser;
   for (const id in userDB) {
     if (userDB[id].email === email) {
       return res.status(400).send("This email is taken! Please use a different email.");
