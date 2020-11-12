@@ -12,7 +12,7 @@ app.use(morgan('dev'));
 
 app.set("view engine", "ejs");
 
-//~~~~~~~~~~~~~FUNCTIONS~~~~~~~~~~~~~~~~~~~~~~
+//~~~FUNCTIONS~~~//~~~~~~~~~~~~~~~~~~
 
 const generateRandomString = function() {
   return Math.floor((1 + Math.random()) * 0x100000).toString(16).substring();
@@ -26,9 +26,20 @@ const urlsForUser = (id) => {
     }
   }
   return userURL;
-}
+};
 
-//~~~~~~~~~~~~~DATABASES~~~~~~~~~~~~~~~~~~~~~~
+const authenticateUser = function(email, password) {
+  for (const id in userDB) {
+    if (userDB[id].email === email){
+      if(bcrypt.compareSync(password, userDB[id].password)) {
+        return userDB[id];
+      }
+    }
+  }
+  return false;
+};
+
+//~~~DATABASES~~~//~~~~~~~~~~~~~~~~~~
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "idString"},
   "9sm5xK": {longURL: "http://www.google.com", userID: "idString"},
@@ -39,7 +50,7 @@ const userDB =  {
   "idString" : {
     id: "idString",
     email: "kermit@thefrog.com",
-    password: bcrypt.hashSync("password", 10),
+    password: bcrypt.hashSync("password", 10)
   },
 };
 
@@ -57,23 +68,21 @@ const userDB =  {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  // const hashPass = bcrypt.hashSync(password, 10);
+  //1. Check for the Email and Password as null strings
   if (!password || !email) {
     return res.status(400).send('Please enter an email and password');
   }
-  let foundUser;
-  for (const id in userDB) {
-    if (userDB[id].email === email) {
-      foundUser = userDB[id];
-    }
+
+  //2. Check for the User Credentials through a helper function
+  let returnedUser = authenticateUser(email, password);
+  if(returnedUser){
+     //everything is good. We are going to set the cookie and proceed to the home page.
+    res.cookie("user_ID", returnedUser);
+    res.redirect("/urls");
+  }else { //the credentials were not right and the user does not exists.
+    return res.status(401).send("Incorrect input. Please try again.")
   }
-  if (!foundUser) {
-    return res.status(400).send("Incorrect input. Please try again.")
-  }
-  if (foundUser.password !== password) {
-    return res.status(400).send("Inccorrect input. Please try again.")
-  }
-  res.cookie("user_ID", foundUser)
-  res.redirect("/urls")
 });
 
 app.get("/login", (req, res) => {
@@ -104,12 +113,16 @@ app.post("/register", (req, res) => {
       return res.status(400).send("This email is taken! Please use a different email.");
     }
   } //If there's no email that matches one in DB
-
   const hashPass = bcrypt.hashSync(password, 10);
   const id = generateRandomString();
-  const user = {id, email, hashPass};
+  //const user = {id, email, password};
+  const user = {
+    id: id,
+    email: email,
+    password: hashPass
+  };
   userDB[id] = user;
-  res.cookie("user_ID", userDB[id])
+   res.cookie("user_ID", userDB[id])
   res.redirect("urls");
 })
 
