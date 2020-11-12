@@ -8,23 +8,25 @@
   </head>
   
   <header>
-    <nav class="navbar navbar-expand-md navbar-dark bg-success ">
+    <%- include('partials/_header'); %>
+    <!-- <nav class="navbar navbar-expand-md navbar-dark bg-success ">
       <a class="navbar-brand" href="#">TinyApp</a>
-    </nav>
+    </nav> -->
   </header>
 
   <body>
     <main style="margin: 5em;">
+      <p class="h4 text-center py-4">Sign in</p>
       <div class="d-flex justify-content-center">
         <form method="POST" action="/login">
-          <label for="email">Email:</label>
-          <input class="form-control" type="email" name="email" placeholder="@example.com" style="width: 300px; margin: 0.5em">
+          <!-- <label for="email">Email:</label> -->
+          <input class="form-control" type="email" name="email" placeholder="Email" style="width: 300px; margin: 0.5em">
           <br>
-          <label for="password">Password:</label>
-          <input class="form-control" type="password" name="password" style="width: 300px; margin: 0.5em">
+          <!-- <label for="password">Password:</label> -->
+          <input class="form-control" type="password" name="password" style="width: 300px; margin: 0.5em" placeholder="Password">
           <br>
           <div class="d-flex justify-content-center">
-            <button type="submit" value="login" class="btn btn-success">LOGIN</button>
+            <button type="submit" value="login" class="btn btn-success">SIGN IN</button>
           </div>
           <div class="d-flex justify-content-center" style="margin: 1em;">
             <p>Not a member?
