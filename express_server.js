@@ -49,10 +49,10 @@ const userDB =  {
 
 //~~~ HOME ~~~~//
 app.get("/", (req, res) => {
-  if (!req.session.user_ID) {
-    res.redirect("/login")
+  if (!req.session.userID) {
+    res.redirect("/login");
   }
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 //~~~ LOGIN ~~~~//
@@ -65,38 +65,38 @@ app.post("/login", (req, res) => {
   }
   // Check if existing user in DB from email
   if (!getUserByEmail(email, userDB)) {
-    return res.status(400).send('That email is not registered.')
+    return res.status(400).send('That email is not registered.');
   }
   // Check if user is authorized
   let returnedUser = authenticateUser(email, password);
   if (returnedUser) {
-    req.session.user_ID = returnedUser;
+    req.session.userID = returnedUser;
     res.redirect("/urls");
-  } else { 
+  } else {
     return res.status(401).send("Incorrect input. Please try again.");
   }
 });
 
 app.get("/login", (req, res) => {
-  if (req.session.user_ID) {
-    res.redirect("/urls")
+  if (req.session.userID) {
+    res.redirect("/urls");
   }
-  const templateVars = {user: req.session.user_ID};
+  const templateVars = {user: req.session.userID};
   res.render("login", templateVars);
 });
 
 //~~~ LOGOUT ~~~~//
 app.post("/logout", (req, res) => {
-  req.session.user_ID = null;
+  req.session.userID = null;
   res.redirect("login");
 });
 
 //~~~ REGISTER ~~~~//
 app.get("/register", (req, res) => {
-  if (req.session.user_ID) {
-    res.redirect("/urls")
+  if (req.session.userID) {
+    res.redirect("/urls");
   }
-  const templateVars = {user: req.session.user_ID};
+  const templateVars = {user: req.session.userID};
   res.render("register", templateVars);
 });
 
@@ -120,25 +120,25 @@ app.post("/register", (req, res) => {
     password: hashPass
   };
   userDB[id] = user;
-  req.session.user_ID = userDB[id];
+  req.session.userID = userDB[id];
   res.redirect("urls");
 });
 
 //~~~ INDEX OF URLS ~~~~//
 app.get("/urls", (req,res) => {
-  if (!req.session.user_ID) {
-    res.status(401).send("Please log in or register first!")
+  if (!req.session.userID) {
+    res.status(401).send("Please log in or register first!");
   }
-  const userCollection = urlsForUser(req.session.user_ID.id, urlDatabase);
-  const templateVars = {urls: urlDatabase, user: req.session.user_ID, userSpecific: userCollection};
+  const userCollection = urlsForUser(req.session.userID.id, urlDatabase);
+  const templateVars = {urls: urlDatabase, user: req.session.userID, userSpecific: userCollection};
   res.render("urls_index", templateVars);
 });
 
 //~~~ NEW URL PAGE ~~~~//
 app.get("/urls/new", (req, res) => {
-  const templateVars = {urls: urlDatabase.longURL, user: req.session.user_ID};
-  if (!req.session.user_ID) {
-    res.status(401).send("Please log in or register first!")
+  const templateVars = {urls: urlDatabase.longURL, user: req.session.userID};
+  if (!req.session.userID) {
+    res.status(401).send("Please log in or register first!");
   }
   res.render("urls_new", templateVars);
 });
@@ -148,32 +148,32 @@ app.post("/urls", (req, res) => {
   const shortie = generateRandomString();
   const longie = checkURL(req.body.longURL);
   if (longie) {
-    const newURL = {longURL: longie, userID: req.session.user_ID.id};
+    const newURL = {longURL: longie, userID: req.session.userID.id};
     urlDatabase[shortie] = newURL;
     res.redirect(`/urls/${shortie}`);
   }
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  if (!req.session.user_ID) {
-    res.status(401).send("Please log in or register first!")
+  if (!req.session.userID) {
+    res.status(401).send("Please log in or register first!");
   }
-  console.log(req.body.longURL)
+  console.log(req.body.longURL);
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  if (!req.session.user_ID) {
-    res.status(401).send("Please log in or register first!")
+  if (!req.session.userID) {
+    res.status(401).send("Please log in or register first!");
   }
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: req.session.user_ID};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: req.session.userID};
   res.render("urls_show", templateVars);
 });
 
 //~~~ DELETE A URL ~~~~//
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if (req.session.user_ID) {
+  if (req.session.userID) {
     let shortie = req.params.shortURL;
     delete urlDatabase[shortie];
   }
@@ -182,8 +182,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //~~~ EDIT A URL ~~~~//
 app.post("/urls/:shortURL", (req, res) => {
-  if (!req.session.user_ID) {
-    res.status(401).send("Please log in or register first!")
+  if (!req.session.userID) {
+    res.status(401).send("Please log in or register first!");
   }
   const newLongURL = checkURL(req.body.longURL);
   urlDatabase[req.params.shortURL].longURL = newLongURL;

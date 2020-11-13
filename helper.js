@@ -21,10 +21,10 @@ const checkURL = function(url) {
   let front = "http://";
   let workingURL = "";
   if (!url.includes(front)) {
-    workingURL = front.concat(url)
+    workingURL = front.concat(url);
     return workingURL;
   }
   return url;
-}
+};
 
 module.exports = { getUserByEmail, urlsForUser, checkURL};
