@@ -9,8 +9,8 @@
     <!-- <div class="collapse navbar-collapse" id="navbarNavAltMarkup"> -->
       <!-- <div class="navbar-nav d-flex justify-content-between"> -->
         <%if (!user) {%>
-        <a class="nav-item nav-link" href="/urls" onclick="return confirm('Please sign in or register to continue.');">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new" onclick="return confirm('Please sign in or register to continue.');">Create New URL</a></div>
+        <a class="nav-item nav-link" href="/urls">My URLs</a>
+        <a class="nav-item nav-link" href="/urls/new">Create New URL</a></div>
         <%}%>
         <!--Login/Logout-->
         <%if (user) {%>
