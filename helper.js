@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 //~~~ Returns a user object from a given email ~~~~//
 const getUserByEmail = function(email, database) {
   for (const user in database) {
@@ -33,4 +35,16 @@ const generateRandomString = function() {
   return Math.floor((1 + Math.random()) * 0x100000).toString(16).substring();
 };
 
-module.exports = { getUserByEmail, urlsForUser, checkURL, generateRandomString };
+const authenticateUser = function(email, password, database) {
+  for (const id in database) {
+    if (database[id].email === email) {
+      if (bcrypt.compareSync(password, database[id].password)) {
+        return database[id];
+      }
+    }
+  }
+  return false;
+};
+
+
+module.exports = { getUserByEmail, urlsForUser, checkURL, generateRandomString, authenticateUser };
