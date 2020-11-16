@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const PORT = 8080;
 const bodyParser = require("body-parser");
-const {getUserByEmail, urlsForUser, checkURL} = require("./helper");
+const { getUserByEmail, urlsForUser, checkURL, generateRandomString } = require("./helper");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
@@ -17,10 +17,6 @@ app.use(cookieSession({
 app.set("view engine", "ejs");
 
 //~~~ FUNCTIONS ~~~//
-const generateRandomString = function() {
-  return Math.floor((1 + Math.random()) * 0x100000).toString(16).substring();
-};
-
 const authenticateUser = function(email, password) {
   for (const id in userDB) {
     if (userDB[id].email === email) {
