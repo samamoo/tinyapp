@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const PORT = 8080;
 const bodyParser = require("body-parser");
-const { getUserByEmail, urlsForUser, checkURL, generateRandomString } = require("./helper");
+const { getUserByEmail, urlsForUser, checkURL, generateRandomString, authenticateUser } = require("./helper");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
@@ -17,16 +17,16 @@ app.use(cookieSession({
 app.set("view engine", "ejs");
 
 //~~~ FUNCTIONS ~~~//
-const authenticateUser = function(email, password) {
-  for (const id in userDB) {
-    if (userDB[id].email === email) {
-      if (bcrypt.compareSync(password, userDB[id].password)) {
-        return userDB[id];
-      }
-    }
-  }
-  return false;
-};
+// const authenticateUser = function(email, password) {
+//   for (const id in userDB) {
+//     if (userDB[id].email === email) {
+//       if (bcrypt.compareSync(password, userDB[id].password)) {
+//         return userDB[id];
+//       }
+//     }
+//   }
+//   return false;
+// };
 
 //~~~ DATABASES ~~~//
 const urlDatabase = {
@@ -64,7 +64,7 @@ app.post("/login", (req, res) => {
     return res.status(400).send('That email is not registered.');
   }
   // Check if user is authorized
-  let returnedUser = authenticateUser(email, password);
+  let returnedUser = authenticateUser(email, password, userDB);
   if (returnedUser) {
     req.session.userID = returnedUser;
     res.redirect("/urls");
