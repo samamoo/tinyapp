@@ -138,17 +138,17 @@ app.post("/urls", (req, res) => {
   }
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
-});
-
 app.get("/urls/:shortURL", (req, res) => {
   if (!req.session.userID) {
     res.status(401).send("Please log in or register first!");
   }
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: req.session.userID};
   res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  res.redirect(longURL);
 });
 
 //~~~ DELETE A URL ~~~~//
@@ -165,9 +165,14 @@ app.post("/urls/:shortURL", (req, res) => {
   if (!req.session.userID) {
     res.status(401).send("Please log in or register first!");
   }
-  const newLongURL = checkURL(req.body.longURL);
-  urlDatabase[req.params.shortURL].longURL = newLongURL;
-  res.redirect(`/urls`);
+  let userOwnsURL = urlsForUser(req.session.userID.id, urlDatabase);
+  console.log(userOwnsURL)
+  if (userOwnsURL.userID === req.session.userID.id) {
+    const newLongURL = checkURL(req.body.longURL);
+    urlDatabase[req.params.shortURL].longURL = newLongURL;
+    res.redirect("/urls");
+  }
+  res.status(401).send("This URL is not yours to modify!")
 });
 
 //~~~ LISTEN ~~~~//
