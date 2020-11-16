@@ -16,6 +16,7 @@ Once registered, all shortened URLs created by the user will be stored in an ind
 
 - Node.js
 - Express
+- Morgan
 - EJS
 - bcrypt
 - body-parser
