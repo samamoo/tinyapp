@@ -16,18 +16,6 @@ app.use(cookieSession({
 
 app.set("view engine", "ejs");
 
-//~~~ FUNCTIONS ~~~//
-// const authenticateUser = function(email, password) {
-//   for (const id in userDB) {
-//     if (userDB[id].email === email) {
-//       if (bcrypt.compareSync(password, userDB[id].password)) {
-//         return userDB[id];
-//       }
-//     }
-//   }
-//   return false;
-// };
-
 //~~~ DATABASES ~~~//
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "idString"},
@@ -151,10 +139,6 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  if (!req.session.userID) {
-    res.status(401).send("Please log in or register first!");
-  }
-  console.log(req.body.longURL);
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
