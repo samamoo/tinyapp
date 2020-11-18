@@ -34,9 +34,9 @@ const userDB =  {
 //~~~ HOME ~~~~//
 app.get("/", (req, res) => {
   if (!req.session.userID) {
-    res.redirect("/login");
+    return res.redirect("/login");
   }
-  res.redirect("/urls");
+  return res.redirect("/urls");
 });
 
 //~~~ LOGIN ~~~~//
@@ -55,7 +55,7 @@ app.post("/login", (req, res) => {
   let returnedUser = authenticateUser(email, password, userDB);
   if (returnedUser) {
     req.session.userID = returnedUser;
-    res.redirect("/urls");
+    return res.redirect("/urls");
   } else {
     return res.status(401).send("Incorrect input. Please try again.");
   }
@@ -63,25 +63,25 @@ app.post("/login", (req, res) => {
 
 app.get("/login", (req, res) => {
   if (req.session.userID) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
   const templateVars = {user: req.session.userID};
-  res.render("login", templateVars);
+  return res.render("login", templateVars);
 });
 
 //~~~ LOGOUT ~~~~//
 app.post("/logout", (req, res) => {
   req.session.userID = null;
-  res.redirect("login");
+  return res.redirect("login");
 });
 
 //~~~ REGISTER ~~~~//
 app.get("/register", (req, res) => {
   if (req.session.userID) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
   const templateVars = {user: req.session.userID};
-  res.render("register", templateVars);
+  return res.render("register", templateVars);
 });
 
 app.post("/register", (req, res) => {
@@ -105,26 +105,26 @@ app.post("/register", (req, res) => {
   };
   userDB[id] = user;
   req.session.userID = userDB[id];
-  res.redirect("urls");
+  return res.redirect("urls");
 });
 
 //~~~ INDEX OF URLS ~~~~//
 app.get("/urls", (req,res) => {
   if (!req.session.userID) {
-    res.status(401).send("Please log in or register first!");
+    return res.status(401).send("Please log in or register first!");
   }
   const userCollection = urlsForUser(req.session.userID.id, urlDatabase);
   const templateVars = {urls: urlDatabase, user: req.session.userID, userSpecific: userCollection};
-  res.render("urls_index", templateVars);
+  return res.render("urls_index", templateVars);
 });
 
 //~~~ NEW URL PAGE ~~~~//
 app.get("/urls/new", (req, res) => {
   const templateVars = {urls: urlDatabase.longURL, user: req.session.userID};
   if (!req.session.userID) {
-    res.status(401).send("Please log in or register first!");
+    return res.status(401).send("Please log in or register first!");
   }
-  res.render("urls_new", templateVars);
+  return res.render("urls_new", templateVars);
 });
 
 //~~~ CREATE NEW SHORT URL ~~~~//
@@ -134,21 +134,24 @@ app.post("/urls", (req, res) => {
   if (longie) {
     const newURL = {longURL: longie, userID: req.session.userID.id};
     urlDatabase[shortie] = newURL;
-    res.redirect(`/urls/${shortie}`);
+    return res.redirect(`/urls/${shortie}`);
   }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   if (!req.session.userID) {
-    res.status(401).send("Please log in or register first!");
+    return res.status(401).send("You are not authorized to view this page!");
   }
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: req.session.userID};
-  res.render("urls_show", templateVars);
+  if (req.session.userID.id !== urlDatabase[req.params.shortURL].userID) {
+    return res.status(401).send("You are not authorized to view this page!")
+  }
+  return res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  return res.redirect(longURL);
 });
 
 //~~~ DELETE A URL ~~~~//
@@ -157,22 +160,25 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     let shortie = req.params.shortURL;
     delete urlDatabase[shortie];
   }
-  res.redirect(`/urls`);
+  return res.redirect(`/urls`);
 });
 
 //~~~ EDIT A URL ~~~~//
 app.post("/urls/:shortURL", (req, res) => {
   if (!req.session.userID) {
-    res.status(401).send("Please log in or register first!");
+    return res.status(401).send("You are not authorized to view this page!");
   }
-  let userOwnsURL = urlsForUser(req.session.userID.id, urlDatabase);
-  console.log(userOwnsURL)
-  if (userOwnsURL.userID === req.session.userID.id) {
-    const newLongURL = checkURL(req.body.longURL);
-    urlDatabase[req.params.shortURL].longURL = newLongURL;
-    res.redirect("/urls");
-  }
-  res.status(401).send("This URL is not yours to modify!")
+
+  // let userOwnsURL = urlsForUser(req.session.userID.id, urlDatabase);
+  // console.log(userOwnsURL)
+  // console.log(typeof req.session.userID.id)
+  // if (userOwnsURL.userID != req.session.userID.id) {
+  //   return res.status(401).send("This URL is not yours to modify!")
+  // }
+
+  const newLongURL = checkURL(req.body.longURL);
+  urlDatabase[req.params.shortURL].longURL = newLongURL;
+  return res.redirect("/urls");
 });
 
 //~~~ LISTEN ~~~~//
